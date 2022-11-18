@@ -81,7 +81,7 @@ function setResult(ws, message, callback) {
 		offline(ws, message, callback);
 	}
 	else if (message.params.type === 'inactive') {
-		
+		inactive(ws, message, callback);
 	}
 }
 
@@ -96,6 +96,13 @@ function offline(ws, message, callback) {
 	if(message.params.values in userList) {
 		console.log("User:- ", ws.Phone + " " + " is now disconnected")
 		delete userList[ws.Phone];
+	}
+    //io.sockets.emit('disconnectedUser',data);
+}
+function inactive(ws, message, callback) {
+	if(message.params.values in userList) {
+		console.log("User:- ", ws.Phone + " " + " is now inactive")
+		
 	}
     //io.sockets.emit('disconnectedUser',data);
 }
