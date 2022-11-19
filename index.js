@@ -121,11 +121,11 @@ function sendMessage(ws, message, callback){
   	}else {
 		//save it to notification file
 		console.log("user:- ", to + " is offline thus saving it to notifications");
-		jsonfile.readFile('json/notification.json', function(err, obj) {
+		jsonfile.readFile('./json/notification.json', function(err, obj) {
 			if(err){
 					var temp_json={"allmsg":[]};
 					temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
-					jsonfile.writeFile('json/notification.json', temp_json, function (err) {
+					jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
 						console.error(err)
 					});
 			}
@@ -145,7 +145,7 @@ function sendMessage(ws, message, callback){
 				else{
 					notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
 				}
-				jsonfile.writeFile('json/notification.json', notification_data, function (err) {
+				jsonfile.writeFile('./json/notification.json', notification_data, function (err) {
 						console.error(err)
 				});
 			} 
