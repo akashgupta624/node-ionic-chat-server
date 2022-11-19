@@ -121,48 +121,35 @@ function sendMessage(ws, message, callback){
   	}else {
 		//save it to notification file
 		console.log("user:- ", to + " is offline thus saving it to notifications");
-		fs.access('json/notification.json', function (doesExist) {
-			if (doesExist) {
-				jsonfile.readFile('json/notification.json', function(err, obj) {
-					if(err){
-						 var temp_json={"allmsg":[]};
-						 temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
-							jsonfile.writeFile('json/notification.json', temp_json, function (err) {
-								console.error(err)
-							});
+		jsonfile.readFile('json/notification.json', function(err, obj) {
+			if(err){
+					var temp_json={"allmsg":[]};
+					temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
+					jsonfile.writeFile('json/notification.json', temp_json, function (err) {
+						console.error(err)
+					});
+			}
+			else{
+				var notification_data=obj;var match_count=false;var temp_i;
+				for(var i=0;i<notification_data.allmsg.length;i++){
+					if(notification_data.allmsg[i].from == from && notification_data.allmsg[i].to == to){
+					match_count=true;
+					temp_i=i;
 					}
-					else{
-						var notification_data=obj;var match_count=false;var temp_i;
-						for(var i=0;i<notification_data.allmsg.length;i++){
-						 if(notification_data.allmsg[i].from == from && notification_data.allmsg[i].to == to){
-						   match_count=true;
-						   temp_i=i;
-						 }
-						}
-		
-						if(match_count == true){
-						 notification_data.allmsg[temp_i].numberofmsg=notification_data.allmsg[temp_i].numberofmsg+1;
-						 notification_data.allmsg[temp_i].allConversation = allConversation;
-						}
-						else{
-						 notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
-						}
-						jsonfile.writeFile('json/notification.json', notification_data, function (err) {
-							 console.error(err)
-						});
-					} 
-				   
-				 });
-			} else {
-			  	console.log('file not found!');
-			  	var notification_data = {'allmsg':[]};
-				notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
+				}
+
+				if(match_count == true){
+					notification_data.allmsg[temp_i].numberofmsg=notification_data.allmsg[temp_i].numberofmsg+1;
+					notification_data.allmsg[temp_i].allConversation = allConversation;
+				}
+				else{
+					notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
+				}
 				jsonfile.writeFile('json/notification.json', notification_data, function (err) {
 						console.error(err)
 				});
-			}
-		  });
-		
+			} 
+			});
 	}
 }
 
