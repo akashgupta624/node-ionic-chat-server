@@ -123,13 +123,19 @@ function sendMessage(ws, message, callback){
 		console.log("user:- ", to + " is offline thus saving it to notifications");
 		jsonfile.readFile('./json/notification.json', function(err, obj) {
 			if(err){
-					var temp_json={"allmsg":[]};
-					temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
-					jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
-						console.error(err)
-					});
+				console.log('error in reading file, thus creating a new file', err);
+				var temp_json={"allmsg":[]};
+				temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
+				jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
+					if(!err) {
+						console.log("new file created");
+						return ;
+					}
+					console.log('error in creating a new file', err);
+				});
 			}
 			else{
+				console.log('File read successfully')
 				var notification_data=obj;var match_count=false;var temp_i;
 				for(var i=0;i<notification_data.allmsg.length;i++){
 					if(notification_data.allmsg[i].from == from && notification_data.allmsg[i].to == to){
@@ -137,7 +143,6 @@ function sendMessage(ws, message, callback){
 					temp_i=i;
 					}
 				}
-
 				if(match_count == true){
 					notification_data.allmsg[temp_i].numberofmsg=notification_data.allmsg[temp_i].numberofmsg+1;
 					notification_data.allmsg[temp_i].allConversation = allConversation;
@@ -146,7 +151,11 @@ function sendMessage(ws, message, callback){
 					notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
 				}
 				jsonfile.writeFile('./json/notification.json', notification_data, function (err) {
-						console.error(err)
+					if(!err) {
+						console.log("new file created");
+						return ;
+					}
+					console.log('error in creating a new file', err);
 				});
 			} 
 			});
