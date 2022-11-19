@@ -155,7 +155,7 @@ function sendMessage(ws, message, callback){
 				 });
 			} else {
 			  	console.log('file not found!');
-			  	var notification_data;
+			  	var notification_data = {'allmsg':[]};
 				notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
 				jsonfile.writeFile('json/notification.json', notification_data, function (err) {
 						console.error(err)
