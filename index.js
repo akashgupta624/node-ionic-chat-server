@@ -154,25 +154,12 @@ function sendMessage(ws, message, callback){
 				   
 				 });
 			} else {
-			  console.log('file not found!');
-			  var notification_data=obj;var match_count=false;var temp_i;
-						for(var i=0;i<notification_data.allmsg.length;i++){
-						 if(notification_data.allmsg[i].from == from && notification_data.allmsg[i].to == to){
-						   match_count=true;
-						   temp_i=i;
-						 }
-						}
-		
-						if(match_count == true){
-						 notification_data.allmsg[temp_i].numberofmsg=notification_data.allmsg[temp_i].numberofmsg+1;
-						 notification_data.allmsg[temp_i].allConversation = allConversation;
-						}
-						else{
-						 notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
-						}
-						jsonfile.writeFile('json/notification.json', notification_data, function (err) {
-							 console.error(err)
-						});
+			  	console.log('file not found!');
+			  	var notification_data;
+				notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
+				jsonfile.writeFile('json/notification.json', notification_data, function (err) {
+						console.error(err)
+				});
 			}
 		  });
 		
