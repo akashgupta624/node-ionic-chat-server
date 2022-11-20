@@ -11,7 +11,7 @@ var userList={};
 let port = process.env.PORT || 8081;
 
 const corsOptions ={
-    origin:'http://192.168.1.2:8100', 
+    origin:'http://localhost:8100', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
@@ -96,12 +96,22 @@ function offline(ws, message, callback) {
 	if(message.params.values in userList) {
 		console.log("User:- ", ws.Phone + " " + " is now disconnected")
 		delete userList[ws.Phone];
+		var result = replyObject;
+			result.subscriptionType = "offline";
+			result.type = "offline";
+			result.result = "User:- ", ws.Phone + " " + " is now disconnected";
+			callback(result);
 	}
     //io.sockets.emit('disconnectedUser',data);
 }
 function inactive(ws, message, callback) {
 	if(message.params.values in userList) {
-		console.log("User:- ", ws.Phone + " " + " is now inactive")
+		console.log("User:- ", ws.Phone + " " + " is now inactive");
+		var result = replyObject;
+			result.subscriptionType = "inactive";
+			result.type = "inactive";
+			result.result = "User:- ", ws.Phone + " " + " is now inactive";
+			callback(result);
 		
 	}
     //io.sockets.emit('disconnectedUser',data);
@@ -115,9 +125,14 @@ function sendMessage(ws, message, callback){
 		allConversation=data[2],
 		msg=data[2].lastMessage;
 	var file=from+"_"+to;
+	var result = replyObject;
+		 result.subscriptionType = "sendMessage";
+		 result.type = "sendMessage";
 	if(to in userList){ 
 	  console.log("sending msg");
 	  io.to(userList[to].id).emit('getMessage',{"message":msg, "phone": from});
+	  result.result = 'sending msg';
+	  callback(result);
   	}else {
 		//save it to notification file
 		console.log("user:- ", to + " is offline thus saving it to notifications");
@@ -129,9 +144,13 @@ function sendMessage(ws, message, callback){
 				jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
 					if(!err) {
 						console.log("new file created");
+						result.result = 'new file created';
+	  					callback(result);
 						return ;
 					}
 					console.log('error in creating a new file', err);
+					result.result = 'error in crating a new file';
+	  				callback(result);
 				});
 			}
 			else{
@@ -152,10 +171,14 @@ function sendMessage(ws, message, callback){
 				}
 				jsonfile.writeFile('./json/notification.json', notification_data, function (err) {
 					if(!err) {
-						console.log("new file created");
+						console.log("changes added to the file");
+						result.result = 'changes added to the file';
+	  					callback(result);
 						return ;
 					}
-					console.log('error in creating a new file', err);
+					console.log('error in updating file', err);
+					result.result = 'error is updating file';
+	  				callback(result);
 				});
 			} 
 			});
@@ -320,12 +343,12 @@ function deleteDisconnectedMember(data){
 
 //notification sending to Users_email
 function getNotifications(data){
-	jsonfile.readFile('json/notification.json', function(err, obj) {
+	jsonfile.readFile('./json/notification.json', function(err, obj) {
 		if(!err){
 			var notification_data=obj;
 			for(var i=0;i<notification_data.allmsg.length;i++){
 				if(notification_data.allmsg[i].to == data){
-					var to =notification_data.allmsg[i].to;
+					var to = notification_data.allmsg[i].to;
 					if(to in userList){
 						io.to(userList[to].id).emit("notifications",{'userId':to, 'conversation':notification_data.allmsg[i].allConversation});
 					}
