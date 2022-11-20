@@ -11,7 +11,7 @@ var userList={};
 let port = process.env.PORT || 8081;
 
 const corsOptions ={
-    origin:'http://localhost:8100', 
+    origin:'http://192.168.1.2:8100', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
