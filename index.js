@@ -342,18 +342,30 @@ function deleteDisconnectedMember(data){
 }
 
 //notification sending to Users_email
-function getNotifications(data){
-	jsonfile.readFile('./json/notification.json', function(err, obj) {
+function getNotifications(ws, message, callback){
+	const data = message.params.values;
+	var result = replyObject;
+	result.subscriptionType = "getNotifications";
+	result.type = "getNotifications";
+	console.log('inside notifications');
+	jsonfile.readFile('json/notification.json', function(err, obj) {
 		if(!err){
 			var notification_data=obj;
+			console.log('file read successfully');
 			for(var i=0;i<notification_data.allmsg.length;i++){
 				if(notification_data.allmsg[i].to == data){
-					var to = notification_data.allmsg[i].to;
-					if(to in userList){
-						io.to(userList[to].id).emit("notifications",{'userId':to, 'conversation':notification_data.allmsg[i].allConversation});
-					}
+					var to =notification_data.allmsg[i].to;
+					console.log('Sending Notifications');
+					console.log('userId', to);
+					console.log('conversation', notification_data.allmsg[i].allConversation);
+					callback({'userId':to, 'conversation':notification_data.allmsg[i].allConversation});	
 				}
 			}
+		}
+		else {
+			result.result = 'error in reading the file';
+			console.log('error in reading the file');
+			callback(result);
 		}
 	});
  }
