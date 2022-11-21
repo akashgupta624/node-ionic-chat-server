@@ -356,9 +356,9 @@ function getNotifications(ws, message, callback){
 				if(notification_data.allmsg[i].to == data){
 					var to =notification_data.allmsg[i].to;
 					console.log('Sending Notifications');
-					console.log('userId', to);
+					console.log('userId', from);
 					console.log('conversation', notification_data.allmsg[i].allConversation);
-					callback({'userId':to, 'conversation':notification_data.allmsg[i].allConversation});	
+					callback({'userId':notification_data.allmsg[i].from, 'conversation':notification_data.allmsg[i].allConversation});	
 				}
 			}
 		}
