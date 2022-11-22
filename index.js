@@ -343,6 +343,7 @@ function deleteDisconnectedMember(data){
 
 //notification sending to Users_email
 function getNotifications(ws, message, callback){
+	var returnResult = [];
 	const data = message.params.values;
 	var result = replyObject;
 	result.subscriptionType = "getNotifications";
@@ -353,14 +354,15 @@ function getNotifications(ws, message, callback){
 			var notification_data=obj;
 			console.log('file read successfully');
 			for(var i=0;i<notification_data.allmsg.length;i++){
-				if(notification_data.allmsg[i].to == data){
-					var to =notification_data.allmsg[i].to;
+				if(notification_data.allmsg[i].to.toString() == data.toString()){
+					var from = notification_data.allmsg[i].from;
 					console.log('Sending Notifications');
 					console.log('userId', from);
 					console.log('conversation', notification_data.allmsg[i].allConversation);
-					callback({'userId':notification_data.allmsg[i].from, 'conversation':notification_data.allmsg[i].allConversation});	
+					returnResult.push({from:notification_data.allmsg[i].allConversation});
 				}
 			}
+			callback(returnResult);	
 		}
 		else {
 			result.result = 'error in reading the file';
