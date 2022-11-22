@@ -55,6 +55,9 @@ io.sockets.on('connection', function(ws){
 	ws.on('error', error => {
 		console.log(error);
 	});
+	ws.on('disconnect', (message, callback) => {
+		offline(ws, callback);
+	});
 });
 
 function setResult(ws, message, callback) {
@@ -77,9 +80,6 @@ function setResult(ws, message, callback) {
 	else if (message.params.type === 'online') {
 		online(ws, message, callback);
 	}
-	else if (message.params.type === 'offline') {
-		offline(ws, message, callback);
-	}
 	else if (message.params.type === 'inactive') {
 		inactive(ws, message, callback);
 	}
@@ -93,14 +93,14 @@ function online(ws, message, callback) {
 }
 
 function offline(ws, message, callback) {
-	if(message.params.values in userList) {
+	if(ws.Phone in userList) {
 		console.log("User:- ", ws.Phone + " " + " is now disconnected")
 		delete userList[ws.Phone];
 		var result = replyObject;
 			result.subscriptionType = "offline";
 			result.type = "offline";
 			result.result = "User:- ", ws.Phone + " " + " is now disconnected";
-			callback(result);
+			//callback(result);
 	}
     //io.sockets.emit('disconnectedUser',data);
 }
@@ -356,12 +356,12 @@ function getNotifications(ws, message, callback){
 			for(var i=0;i<notification_data.allmsg.length;i++){
 				if(notification_data.allmsg[i].to.toString() == data.toString()){
 					var from = notification_data.allmsg[i].from;
-					console.log('Sending Notifications');
 					console.log('userId', from);
 					console.log('conversation', notification_data.allmsg[i].allConversation);
 					returnResult.push({'from':from ,'conversation':notification_data.allmsg[i].allConversation});
 				}
 			}
+			console.log('Sending Notifications');
 			callback(returnResult);	
 		}
 		else {
