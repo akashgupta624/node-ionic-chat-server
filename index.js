@@ -359,7 +359,7 @@ function getNotifications(ws, message, callback){
 					console.log('Sending Notifications');
 					console.log('userId', from);
 					console.log('conversation', notification_data.allmsg[i].allConversation);
-					returnResult.push({from:notification_data.allmsg[i].allConversation});
+					returnResult.push({'from':from ,'conversation':notification_data.allmsg[i].allConversation});
 				}
 			}
 			callback(returnResult);	

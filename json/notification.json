@@ -1,14 +1,6 @@
 {
     "allmsg":
     [
-        {
-            "from":"12","to":"8586906308","numberofmsg":1,"allConversation":{"chats":[{"date":"Today","chats":[{"message":"Welcome from Ionic App","date":"Today","type":"user"}, {"message":"Please go through your privacy settings","date":"Today","type":"user"}]}],"lastMessage":"Please go through your privacy settings","lastMessageTime":"Today","displayName":"Admin","phoneNumbers":[{"number":"Admin","label":"mobile"}],"emails":[],"contactId":"0081300F-C478-4D95-B8CF-3EEECE3FFBF2:ABPerson","photoThumbnail":"capacitor://localhost/_capacitor_file_/var/mobile/Containers/Data/Application/FB775752-DA6D-4960-8E74-4921C5302B1F/Documents/dp.jpeg","status":"What's in your mind ...","organizationRole":"Admin","unRead":2}
-        },
-        {
-            "from":"232","to":"8586906308","numberofmsg":1,"allConversation":{"chats":[{"date":"Today","chats":[{"message":"Welcome from Ionic App","date":"Today","type":"user"}, {"message":"Please go through your privacy settings","date":"Today","type":"user"}]}],"lastMessage":"Please go through your privacy settings","lastMessageTime":"Today","displayName":"Admin","phoneNumbers":[{"number":"Admin","label":"mobile"}],"emails":[],"contactId":"0081300F-C478-4D95-B8CF-3EEECE3FFBF2:ABPerson","photoThumbnail":"capacitor://localhost/_capacitor_file_/var/mobile/Containers/Data/Application/FB775752-DA6D-4960-8E74-4921C5302B1F/Documents/dp.jpeg","status":"What's in your mind ...","organizationRole":"Admin","unRead":2}
-        },
-        {
-            "from":"1234567","to":"8586906308","numberofmsg":1,"allConversation":{"chats":[{"date":"Today","chats":[{"message":"Welcome from Ionic App","date":"Today","type":"user"}, {"message":"Please go through your privacy settings","date":"Today","type":"user"}]}],"lastMessage":"Please go through your privacy settings","lastMessageTime":"Today","displayName":"Admin","phoneNumbers":[{"number":"Admin","label":"mobile"}],"emails":[],"contactId":"0081300F-C478-4D95-B8CF-3EEECE3FFBF2:ABPerson","photoThumbnail":"capacitor://localhost/_capacitor_file_/var/mobile/Containers/Data/Application/FB775752-DA6D-4960-8E74-4921C5302B1F/Documents/dp.jpeg","status":"What's in your mind ...","organizationRole":"Admin","unRead":2}
-        }
+       
     ]
 }
