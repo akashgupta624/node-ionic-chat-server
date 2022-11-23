@@ -122,7 +122,8 @@ function sendMessage(ws, message, callback){
 	var message={};
 	var to=data[0],
 		from=data[1],
-		allConversation=data[2],
+		senderName=data[2],
+		allConversation=data[3],
 		msg=data[2].lastMessage;
 	var file=from+"_"+to;
 	var result = replyObject;
@@ -140,7 +141,7 @@ function sendMessage(ws, message, callback){
 			if(err){
 				console.log('error in reading file, thus creating a new file', err);
 				var temp_json={"allmsg":[]};
-				temp_json['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation});
+				temp_json['allmsg'].push({"from":from, "senderName":senderName, "to":to, "numberofmsg":1, "allConversation":allConversation});
 				jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
 					if(!err) {
 						console.log("new file created");
@@ -167,7 +168,7 @@ function sendMessage(ws, message, callback){
 					notification_data.allmsg[temp_i].allConversation = allConversation;
 				}
 				else{
-					notification_data['allmsg'].push({"from":from, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
+					notification_data['allmsg'].push({"from":from, "senderName":senderName, "to":to, "numberofmsg":1, "allConversation":allConversation}); 
 				}
 				jsonfile.writeFile('./json/notification.json', notification_data, function (err) {
 					if(!err) {
