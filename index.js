@@ -124,7 +124,7 @@ function sendMessage(ws, message, callback){
 		from=data[1],
 		senderName=data[2],
 		allConversation=data[3],
-		msg=data[2].lastMessage;
+		msg=data[3].lastMessage;
 	var file=from+"_"+to;
 	var result = replyObject;
 		 result.subscriptionType = "sendMessage";
@@ -350,7 +350,7 @@ function getNotifications(ws, message, callback){
 	result.subscriptionType = "getNotifications";
 	result.type = "getNotifications";
 	console.log('inside notifications');
-	jsonfile.readFile('json/notification.json', function(err, obj) {
+	jsonfile.readFile('./json/notification.json', function(err, obj) {
 		if(!err){
 			var notification_data=obj;
 			console.log('file read successfully');
