@@ -206,7 +206,7 @@ function sendMessage(ws, message, callback){
 	}
 }
 
-function sendPushNotification(senderName, from, to, msg); {
+function sendPushNotification(senderName, from, to, msg) {
 	accountModel.find({phone:to},function(err,docs){
 		if(err){
 			console.log("Error :- in query");
