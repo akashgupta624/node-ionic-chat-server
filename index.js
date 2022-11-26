@@ -6,19 +6,18 @@ const io = require('socket.io')(server);
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const mongoose=require('mongoose');
-const FCM = require('fcm-node');
-const serverKey = 'AAAArBaM1dg:APA91bFgLUCw-tdPW1JIlN1x4ARsVSnIYdpmwWnl6y8QjVT6Akw_YTgCBiUZqEHZNjCnywdCjHVCwAucb_Gneh_1zdTZVCwd-jwnJeG2_fcRxcRUHP6mTR-gCb7VtHSZcKbSg0HqNna1';
-const fcm = new FCM(serverKey);
+var admin = require("firebase-admin");
+var serviceAccount = require("./firebase.json");
+
+const notification_options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24
+};
 
 var message = {
-	to:'<DEVICE_TOKEN>',
 	notification: {
 		title: 'NotifcatioTestAPP',
 		body: '{"Message from node js app"}',
-	},
-	data: { //you can send only notification or only data(or include both)
-		title: 'ok cdfsdsdfsd',
-		body: '{"name" : "okg ooggle ogrlrl","product_id" : "123","final_price" : "0.00035"}'
 	}
 };
 
@@ -214,18 +213,13 @@ function sendPushNotification(senderName, from, to, msg) {
 		else{
 			console.log("Success:- records found");
 			let msgToSend = message;
-			msgToSend.to = docs.deviceToken;
 			msgToSend.notification.title = 'Message from ' + senderName;
 			msgToSend.notification.body = msg;
-			msgToSend.data = {};
-			fcm.send(msgToSend, function(err, response) {
-				if (err) {
-					console.log("Something has gone wrong!"+err);
-					console.log("Error in sending push notification to :- " + to);
-				} else {
-					console.log("Successfully sent with response: ", response);
-				}
-		
+			admin.messaging().sendToDevice(docs.deviceToken, msgToSend, notification_options).then( response => {
+				console.log("Push Notification Sent Successfully to :- ", to);
+			})
+			.catch( error => {
+				console.log("Error in Sending the push notification", error);
 			});
 		}
 	});
@@ -341,7 +335,7 @@ function findAccessibleContacts(ws, message, callback) {
 function addUserToDatabase(ws, message, callback) {
 	var result = replyObject;
 		 result.subscriptionType = "addUserToDatabase";
-		 result.type = "addUserToDatabase";
+		 result.type = "Error";
 	const data = message.params.values;
 	accountModel.find({email:data.email, phone:data.phone},function(err,docs){
 		if(err){
@@ -423,5 +417,8 @@ server.listen(port, () => {
 	mongoose.connect(url, options, function(err){
 		if(err)console.log("Mongodb database not connected", err);
 		else console.log("connected to Mongodb successfully");
+		admin.initializeApp({
+			credential: admin.credential.cert(serviceAccount)
+		  })
 	});
 });
