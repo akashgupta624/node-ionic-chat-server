@@ -6,6 +6,21 @@ const io = require('socket.io')(server);
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const mongoose=require('mongoose');
+const FCM = require('fcm-node');
+const serverKey = 'AAAArBaM1dg:APA91bFgLUCw-tdPW1JIlN1x4ARsVSnIYdpmwWnl6y8QjVT6Akw_YTgCBiUZqEHZNjCnywdCjHVCwAucb_Gneh_1zdTZVCwd-jwnJeG2_fcRxcRUHP6mTR-gCb7VtHSZcKbSg0HqNna1';
+const fcm = new FCM(serverKey);
+
+var message = {
+	to:'<DEVICE_TOKEN>',
+	notification: {
+		title: 'NotifcatioTestAPP',
+		body: '{"Message from node js app"}',
+	},
+	data: { //you can send only notification or only data(or include both)
+		title: 'ok cdfsdsdfsd',
+		body: '{"name" : "okg ooggle ogrlrl","product_id" : "123","final_price" : "0.00035"}'
+	}
+};
 
 var userList={};  
 let port = process.env.PORT || 8081;
@@ -43,7 +58,8 @@ var userDetailsSchema=mongoose.Schema({
 	otp: String,
 	googleAuth: Object,
 	facebookAuth: Object,
-	phoneAuth: Object
+	phoneAuth: Object,
+	deviceToken: String
   });
 var accountModel=mongoose.model('accounts',userDetailsSchema);
 
@@ -132,7 +148,7 @@ function sendMessage(ws, message, callback){
 	if(to in userList){ 
 	  console.log("sending msg");
 	  io.to(userList[to].id).emit('getMessage',{"message":msg, "phone": from});
-	  result.result = 'sending msg';
+	  result.result = 'Success';
 	  callback(result);
   	}else {
 		//save it to notification file
@@ -145,12 +161,14 @@ function sendMessage(ws, message, callback){
 				jsonfile.writeFile('./json/notification.json', temp_json, function (err) {
 					if(!err) {
 						console.log("new file created");
-						result.result = 'new file created';
+						result.result = 'FailedToSendMessage';
+						sendPushNotification(senderName, from, to, msg);
 	  					callback(result);
 						return ;
 					}
 					console.log('error in creating a new file', err);
-					result.result = 'error in crating a new file';
+					result.result = 'FileCreationError';
+					sendPushNotification(senderName, from, to, msg);
 	  				callback(result);
 				});
 			}
@@ -174,16 +192,43 @@ function sendMessage(ws, message, callback){
 					if(!err) {
 						console.log("changes added to the file");
 						result.result = 'changes added to the file';
+						sendPushNotification(senderName, from, to, msg);
 	  					callback(result);
 						return ;
 					}
 					console.log('error in updating file', err);
 					result.result = 'error is updating file';
+					sendPushNotification(senderName, from, to, msg);
 	  				callback(result);
 				});
 			} 
 			});
 	}
+}
+
+function sendPushNotification(senderName, from, to, msg); {
+	accountModel.find({phone:to},function(err,docs){
+		if(err){
+			console.log("Error :- in query");
+		}
+		else{
+			console.log("Success:- records found");
+			let msgToSend = message;
+			msgToSend.to = docs.deviceToken;
+			msgToSend.notification.title = 'Message from ' + senderName;
+			msgToSend.notification.body = msg;
+			msgToSend.data = {};
+			fcm.send(msgToSend, function(err, response) {
+				if (err) {
+					console.log("Something has gone wrong!"+err);
+					console.log("Error in sending push notification to :- " + to);
+				} else {
+					console.log("Successfully sent with response: ", response);
+				}
+		
+			});
+		}
+	});
 }
 
 function addingDataToJson(message,file,from,to,msg){
