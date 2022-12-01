@@ -60,7 +60,6 @@ var userDetailsSchema=mongoose.Schema({
 	phoneAuth: Object,
 	deviceToken: String,
 	conversations: Object,
-    groups: Object,
     freshLogin: Boolean,
   });
 var accountModel=mongoose.model('accounts',userDetailsSchema);
