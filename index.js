@@ -80,6 +80,9 @@ function setResult(ws, message, callback) {
 	if (message.params.type === 'addUserToDatabase') {
 		addUserToDatabase(ws, message, callback);
 	}
+	else if (message.params.type === 'verifyUser') {
+		verifyUser(ws, message, callback);
+	}
 	else if (message.params.type === 'accessibleContacts') {
 		findAccessibleContacts(ws, message, callback);
 	}
@@ -305,6 +308,34 @@ var temp_json={"allmsg":[]};
 	}
 }
 
+function verifyUser(ws, message, callback) {
+	var result = replyObject;
+		 result.subscriptionType = "Error";
+		 result.type = "Error";
+	const phone = message.params.values;
+	accountModel.find({phone:phone},function(err,docs){
+		if(err){
+			console.log("Error :- While finding in Database ", phone);
+			result.subscriptionType = "Error";
+			callback(result);
+		}
+		else{
+			if(docs.length == 0){
+				console.log("Error :- A new User ", phone);
+				result.subscriptionType = "Success";
+				result.result = "Success";
+				callback(result);
+			 }
+			 else{
+				console.log("Error :- Already exist in Database ", phone);
+				result.subscriptionType = "AlreadyExist";
+				result.result = docs;
+				callback(result);
+			 }	
+		}
+	});
+}
+
 function findAccessibleContacts(ws, message, callback) {
 	var result = replyObject;
 		 result.subscriptionType = "accessibleContacts";
@@ -339,36 +370,18 @@ function addUserToDatabase(ws, message, callback) {
 		 result.subscriptionType = "Error";
 		 result.type = "Error";
 	const data = message.params.values;
-	accountModel.find({email:data.email, phone:data.phone},function(err,docs){
+	var newUser= new accountModel(data);
+	newUser.save(function(err){
 		if(err){
-		 console.log("Error :- While finding in Database ", data.email);
-		 result.subscriptionType = "Error";
-		 callback(result);
+			console.log("Error :- While adding to database ", data.email);
+			result.subscriptionType = "Error";
+			 callback(result);
 		}
 		else{
-		  if(docs.length == 0){
-			 var newUser= new accountModel(data);
-			newUser.save(function(err){
-				if(err){
-					console.log("Error :- While adding to database ", data.email);
-					result.subscriptionType = "Error";
-		 			callback(result);
-				}
-				else{
-					console.log("Success :- Added to Database", data.email);
-					result.subscriptionType = "Success";
-		 			callback(result);
-				}
-			});
-		  }
-		  else{
-			console.log("Error :- Already exist in Database ", data.email);
-			result.subscriptionType = "AlreadyExist";
-			result.result = docs;
-		 	callback(result);
-		  }
+			console.log("Success :- Added to Database", data.email);
+			result.subscriptionType = "Success";
+			 callback(result);
 		}
-		
 	});
 }
 
