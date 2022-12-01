@@ -215,12 +215,14 @@ function sendPushNotification(senderName, from, to, msg) {
 			let msgToSend = message;
 			msgToSend.notification.title = 'Message from ' + senderName;
 			msgToSend.notification.body = msg;
-			admin.messaging().sendToDevice(docs.deviceToken, msgToSend, notification_options).then( response => {
-				console.log("Push Notification Sent Successfully to :- ", to);
-			})
-			.catch( error => {
-				console.log("Error in Sending the push notification", error);
-			});
+			if (docs[0].deviceToken != "No Token") {
+				admin.messaging().sendToDevice(docs[0].deviceToken, msgToSend, notification_options).then( response => {
+					console.log("Push Notification Sent Successfully to :- ", to);
+				})
+				.catch( error => {
+					console.log("Error in Sending the push notification", error);
+				});
+			}
 		}
 	});
 }
@@ -420,6 +422,6 @@ server.listen(port, () => {
 		else console.log("connected to Mongodb successfully");
 		admin.initializeApp({
 			credential: admin.credential.cert(serviceAccount)
-		  })
+		  });
 	});
 });
