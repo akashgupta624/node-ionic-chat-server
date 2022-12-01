@@ -334,8 +334,8 @@ function findAccessibleContacts(ws, message, callback) {
 
 function addUserToDatabase(ws, message, callback) {
 	var result = replyObject;
-		 result.subscriptionType = "addUserToDatabase";
 		 result.subscriptionType = "Error";
+		 result.type = "Error";
 	const data = message.params.values;
 	accountModel.find({email:data.email, phone:data.phone},function(err,docs){
 		if(err){
