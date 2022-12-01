@@ -58,7 +58,10 @@ var userDetailsSchema=mongoose.Schema({
 	googleAuth: Object,
 	facebookAuth: Object,
 	phoneAuth: Object,
-	deviceToken: String
+	deviceToken: String,
+	conversations: Object,
+    groups: Object,
+    freshLogin: String,
   });
 var accountModel=mongoose.model('accounts',userDetailsSchema);
 
