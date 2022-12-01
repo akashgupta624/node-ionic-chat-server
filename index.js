@@ -335,12 +335,12 @@ function findAccessibleContacts(ws, message, callback) {
 function addUserToDatabase(ws, message, callback) {
 	var result = replyObject;
 		 result.subscriptionType = "addUserToDatabase";
-		 result.type = "Error";
+		 result.subscriptionType = "Error";
 	const data = message.params.values;
 	accountModel.find({email:data.email, phone:data.phone},function(err,docs){
 		if(err){
 		 console.log("Error :- While finding in Database ", data.email);
-		 result.result = "Error";
+		 result.subscriptionType = "Error";
 		 callback(result);
 		}
 		else{
@@ -349,19 +349,20 @@ function addUserToDatabase(ws, message, callback) {
 			newUser.save(function(err){
 				if(err){
 					console.log("Error :- While adding to database ", data.email);
-					result.result = "Error";
+					result.subscriptionType = "Error";
 		 			callback(result);
 				}
 				else{
 					console.log("Success :- Added to Database", data.email);
-					result.result = "Success";
+					result.subscriptionType = "Success";
 		 			callback(result);
 				}
 			});
 		  }
 		  else{
 			console.log("Error :- Already exist in Database ", data.email);
-			result.result = "Error";
+			result.subscriptionType = "AlreadyExist";
+			result.result = docs;
 		 	callback(result);
 		  }
 		}
