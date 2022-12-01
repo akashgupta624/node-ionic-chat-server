@@ -61,7 +61,7 @@ var userDetailsSchema=mongoose.Schema({
 	deviceToken: String,
 	conversations: Object,
     groups: Object,
-    freshLogin: String,
+    freshLogin: Boolean,
   });
 var accountModel=mongoose.model('accounts',userDetailsSchema);
 
