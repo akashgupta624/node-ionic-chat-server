@@ -48,19 +48,20 @@ const replyObject = {
 };  
 
 var userDetailsSchema=mongoose.Schema({
-	email: String,
-	password: String,
-	phone: String,
-	name: String,
-	status: String,
-	profilePicture: String,
-	otp: String,
-	googleAuth: Object,
-	facebookAuth: Object,
-	phoneAuth: Object,
-	deviceToken: String,
-	conversations: Object,
-    freshLogin: Boolean,
+	email: {type: String, default: 'null'},
+	password: {type: String, default: 'null'},
+	phone: {type: String, default: 'null'},
+	name: {type: String, default: 'null'},
+	status: {type: String, default: 'null'},
+	profilePicture: {type: String, default: 'null'},
+	otp: {type: String, default: 'null'},
+	googleAuth: {type: Object, default: {}},
+	facebookAuth: {type: Object, default: {}},
+	phoneAuth: {type: Object, default: {}},
+	deviceToken: {type: String, default: 'No Token'},
+	conversations: {type: Object, default: {}},
+    groups: {type: Object, default: {}},
+    freshLogin: {type: Boolean, default: true},
   });
 var accountModel=mongoose.model('accounts',userDetailsSchema);
 
