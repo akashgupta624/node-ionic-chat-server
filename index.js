@@ -373,6 +373,18 @@ function addUserToDatabase(ws, message, callback) {
 		 result.subscriptionType = "Error";
 		 result.type = "Error";
 	const data = message.params.values;
+	if (data.deviceToken){
+
+	}
+	else {
+		data.deviceToken = "No Token";
+	}
+	if (data.freshLogin){
+
+	}
+	else {
+		data.freshLogin = True;
+	}
 	var newUser= new accountModel(data);
 	newUser.save(function(err){
 		if(err){
