@@ -16,8 +16,8 @@ const notification_options = {
 
 var message = {
 	notification: {
-		title: 'NotifcatioTestAPP',
-		body: '{"Message from node js app"}',
+		title: "",
+		body: "",
 	}
 };
 
