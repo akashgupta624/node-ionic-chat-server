@@ -1,4 +1,5 @@
 const express = require('express');
+const { TextEncoder, TextDecoder } = require("util");
 const app = express();
 const cors = require('cors');
 const server = require('http').createServer(app);
@@ -9,6 +10,7 @@ const mongoose=require('mongoose');
 var admin = require("firebase-admin");
 var serviceAccount = require("./firebase.json");
 
+var encoder = new util.TextEncoder('utf-8');
 const notification_options = {
     priority: "high",
     timeToLive: 60 * 60 * 24
