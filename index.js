@@ -4,7 +4,7 @@ const util = require("util");
 const app = express();
 const cors = require('cors');
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {maxHttpBufferSize: 1e8, pingTimeout: 60000, allowEIO3: true, transports: ['websocket', 'polling', 'flashsocket']});
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const mongoose=require('mongoose');
@@ -21,6 +21,7 @@ var message = {
 	notification: {
 		title: "",
 		body: "",
+		icon: ""
 	}
 };
 
@@ -58,8 +59,6 @@ var userDetailsSchema=mongoose.Schema({
 	status: {type: String, default: 'null'},
 	profilePicture: {type: String, default: 'null'},
 	otp: {type: String, default: 'null'},
-	googleAuth: {type: Object, default: {}},
-	facebookAuth: {type: Object, default: {}},
 	phoneAuth: {type: Object, default: {}},
 	deviceToken: {type: String, default: 'No Token'},
 	conversations: {type: Object, default: {}},
@@ -119,6 +118,7 @@ function online(ws, message, callback) {
 function offline(ws, message, callback) {
 	if(ws.Phone in userList) {
 		console.log("User:- ", ws.Phone + " " + " is now disconnected")
+		console.log(ws);
 		delete userList[ws.Phone];
 		var result = replyObject;
 			result.subscriptionType = "offline";
@@ -224,6 +224,7 @@ function sendPushNotification(senderName, from, to, msg) {
 			let msgToSend = message;
 			msgToSend.notification.title = 'Message from ' + senderName;
 			msgToSend.notification.body = msg;
+			msgToSend.notification.icon = "";
 			if (docs[0].deviceToken != "No Token") {
 				admin.messaging().sendToDevice(docs[0].deviceToken, msgToSend, notification_options).then( response => {
 					console.log("Push Notification Sent Successfully to :- ", to);
@@ -376,18 +377,6 @@ function addUserToDatabase(ws, message, callback) {
 		 result.subscriptionType = "Error";
 		 result.type = "Error";
 	const data = JSON.parse(message.params.values);
-	if (data.deviceToken){
-
-	}
-	else {
-		data.deviceToken = "No Token";
-	}
-	if (data.freshLogin){
-
-	}
-	else {
-		data.freshLogin = True;
-	}
 	var newUser= new accountModel(data);
 	newUser.save(function(err){
 		if(err){
