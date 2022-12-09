@@ -375,7 +375,7 @@ function addUserToDatabase(ws, message, callback) {
 	var result = replyObject;
 		 result.subscriptionType = "Error";
 		 result.type = "Error";
-	const data = message.params.values;
+	const data = JSON.parse(message.params.values);
 	if (data.deviceToken){
 
 	}
