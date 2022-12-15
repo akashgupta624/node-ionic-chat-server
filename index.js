@@ -106,6 +106,57 @@ function setResult(ws, message, callback) {
 	else if (message.params.type === 'inactive') {
 		inactive(ws, message, callback);
 	}
+	else if (message.params.type === 'deleteUserFromDatabase') {
+		deleteUserFromDatabase(ws, message, callback);
+	}
+	else if (message.params.type === 'calling') {
+		calling(ws, message, callback);
+	}
+}
+
+function calling(ws, message, callback) {
+	var result = replyObject;
+	result.subscriptionType = "Error";
+	result.type = "Error";
+	const data = message.params.values;
+	var to=data[0],
+		from=data[1],
+		senderName=data[2],
+		icon=data[3].photoThumbnail,
+		uniqueId = data[4];
+	if(phone in userList) {
+		console.log(phone + 'is online and thus making a call');
+		result.subscriptionType = "Success";
+		result.result = "Success";
+		io.to(userList[to].id).emit('incomingCall',{"name":senderName, "phone": from, "uniqueId":uniqueId});
+		callback(result);	
+	}
+	else {
+		console.log(phone + 'is offline and thus sending a notification');
+		sendPushNotification(senderName, from, to, 'Incoming call ..', icon);
+		callback(result);
+	}
+}
+
+function deleteUserFromDatabase(ws, message, callback) {
+	var result = replyObject;
+	result.subscriptionType = "Error";
+	result.type = "Error";
+	const phone = message.params.values;
+	accountModel.deleteOne({phone:phone},function(err,docs){
+	if(err){
+		console.log("Error :- While deleting in Database ", phone);
+		console.log(err);
+		result.subscriptionType = "Error";
+		callback(result);
+	}
+	else{
+		console.log("Deleted Successfully", phone);
+		result.subscriptionType = "Success";
+		result.result = "Success";
+		callback(result);		
+	}
+	});
 }
 
 function online(ws, message, callback) {
@@ -149,6 +200,7 @@ function sendMessage(ws, message, callback){
 		senderName=data[2],
 		allConversation=data[3],
 		msg=data[3].lastMessage;
+	var icon = allConversation.photoThumbnail;
 	var file=from+"_"+to;
 	var result = replyObject;
 		 result.subscriptionType = "sendMessage";
@@ -170,13 +222,13 @@ function sendMessage(ws, message, callback){
 					if(!err) {
 						console.log("new file created");
 						result.result = 'FailedToSendMessage';
-						sendPushNotification(senderName, from, to, msg);
+						sendPushNotification(senderName, from, to, msg, icon);
 	  					callback(result);
 						return ;
 					}
 					console.log('error in creating a new file', err);
 					result.result = 'FileCreationError';
-					sendPushNotification(senderName, from, to, msg);
+					sendPushNotification(senderName, from, to, msg, icon);
 	  				callback(result);
 				});
 			}
@@ -200,13 +252,13 @@ function sendMessage(ws, message, callback){
 					if(!err) {
 						console.log("changes added to the file");
 						result.result = 'changes added to the file';
-						sendPushNotification(senderName, from, to, msg);
+						sendPushNotification(senderName, from, to, msg, icon);
 	  					callback(result);
 						return ;
 					}
 					console.log('error in updating file', err);
 					result.result = 'error is updating file';
-					sendPushNotification(senderName, from, to, msg);
+					sendPushNotification(senderName, from, to, msg, icon);
 	  				callback(result);
 				});
 			} 
@@ -214,7 +266,7 @@ function sendMessage(ws, message, callback){
 	}
 }
 
-function sendPushNotification(senderName, from, to, msg) {
+function sendPushNotification(senderName, from, to, msg, icon) {
 	accountModel.find({phone:to},function(err,docs){
 		if(err){
 			console.log("Error :- in query");
@@ -224,7 +276,7 @@ function sendPushNotification(senderName, from, to, msg) {
 			let msgToSend = message;
 			msgToSend.notification.title = 'Message from ' + senderName;
 			msgToSend.notification.body = msg;
-			msgToSend.notification.icon = "";
+			msgToSend.notification.icon = icon;
 			if (docs[0].deviceToken != "No Token") {
 				admin.messaging().sendToDevice(docs[0].deviceToken, msgToSend, notification_options).then( response => {
 					console.log("Push Notification Sent Successfully to :- ", to);
