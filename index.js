@@ -124,15 +124,15 @@ function calling(ws, message, callback) {
 		senderName=data[2],
 		icon=data[3].photoThumbnail,
 		uniqueId = data[4];
-	if(phone in userList) {
-		console.log(phone + 'is online and thus making a call');
+	if(to in userList) {
+		console.log(to + 'is online and thus making a call');
 		result.subscriptionType = "Success";
 		result.result = "Success";
 		io.to(userList[to].id).emit('incomingCall',{"name":senderName, "phone": from, "uniqueId":uniqueId});
 		callback(result);	
 	}
 	else {
-		console.log(phone + 'is offline and thus sending a notification');
+		console.log(to + 'is offline and thus sending a notification');
 		sendPushNotification(senderName, from, to, 'Incoming call ..', icon);
 		callback(result);
 	}
