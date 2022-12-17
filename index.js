@@ -112,6 +112,9 @@ function setResult(ws, message, callback) {
 	else if (message.params.type === 'calling') {
 		calling(ws, message, callback);
 	}
+	else if (message.params.type === 'callDisconnected') {
+		callDisconnected(ws, message, callback);
+	}
 }
 
 function calling(ws, message, callback) {
@@ -129,6 +132,26 @@ function calling(ws, message, callback) {
 		result.subscriptionType = "Success";
 		result.result = "Success";
 		io.to(userList[to].id).emit('incomingCall',{"name":senderName, "phone": from, "uniqueId":uniqueId});
+		callback(result);	
+	}
+	else {
+		console.log(to + 'is offline and thus sending a notification');
+		sendPushNotification(senderName, from, to, 'Incoming call ..', icon);
+		callback(result);
+	}
+}
+
+function callDisconnected(ws, message, callback) {
+	var result = replyObject;
+	result.subscriptionType = "Error";
+	result.type = "Error";
+	const user = message.params.values;
+	
+	if(user in userList) {
+		console.log(to + 'is online and thus disconnecting a call');
+		result.subscriptionType = "Success";
+		result.result = "Success";
+		io.to(userList[to].id).emit('hangup', "");
 		callback(result);	
 	}
 	else {
